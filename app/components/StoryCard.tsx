@@ -38,16 +38,16 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       const diffDays = Math.floor(diffHours / 24);
       const diffWeeks = Math.floor(diffDays / 7);
       
-      // Calculate months difference robustly using anniversary date
+      // Calculate months difference robustly using original month/day for anniversary
       let diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
-      // Construct the most recent month anniversary date (same day in current month/year)
-      // Handle edge cases where date.getDate() doesn't exist in current month (e.g., Jan 31 -> Feb)
-      const lastDayOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const monthAnniversaryDay = Math.min(date.getDate(), lastDayOfCurrentMonth);
-      const monthAnniversary = new Date(now.getFullYear(), now.getMonth(), monthAnniversaryDay, 0, 0, 0, 0);
+      // Construct the anniversary date in the current month using the original day
+      // If the day doesn't exist in current month (e.g., Jan 31 -> Feb), Date will roll over,
+      // which correctly indicates the anniversary hasn't occurred yet in the current month
+      const anniversaryThisMonth = new Date(now.getFullYear(), now.getMonth(), date.getDate(), 0, 0, 0, 0);
       // Normalize now to midnight for proper comparison
       const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-      if (nowMidnight.getTime() < monthAnniversary.getTime()) {
+      // If current date is before the anniversary this month, subtract one from diffMonths
+      if (nowMidnight.getTime() < anniversaryThisMonth.getTime()) {
         diffMonths -= 1;
       }
       // Ensure non-negative value (shouldn't be needed due to future date check, but safety net)

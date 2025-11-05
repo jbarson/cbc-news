@@ -1,5 +1,36 @@
 # CBC News RSS App - Improvement Suggestions
 
+## ✅ Completed Improvements (Phase 1)
+
+### 3. **Persist View Mode Preference** ✅
+**Status**: Implemented in `app/page.tsx`
+- View mode preference (grid/list) is now saved to localStorage
+- Preference persists across page reloads
+- Removed unnecessary window checks in client component
+
+### 5. **Enhanced Loading States** ✅
+**Status**: Implemented with `StoryCardSkeleton` component
+- Added skeleton loaders with shimmer animations
+- Improved perceived performance during data fetching
+- Supports both grid and list view modes
+
+### 6. **Relative Time Display** ✅
+**Status**: Implemented in `app/components/StoryCard.tsx`
+- Dates now show relative time (e.g., "2 hours ago")
+- Absolute time available in tooltip on hover
+- Accurate month/year calculations using calendar dates
+- Optimized to avoid redundant date formatting calls
+
+### 8. **Better Error Messages** ✅
+**Status**: Implemented in `app/page.tsx`
+- Context-specific error messages based on HTTP status codes
+- 429: Rate limiting message
+- 500+: Server error message
+- 404: Not found message
+- Network errors: Connection error message
+
+---
+
 ## 🚀 High Priority Improvements
 
 ### 1. **API Response Caching & Revalidation**

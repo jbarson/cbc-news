@@ -24,8 +24,10 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       const diffHours = Math.floor(diffMinutes / 60);
       const diffDays = Math.floor(diffHours / 24);
       const diffWeeks = Math.floor(diffDays / 7);
-      const diffMonths = Math.floor(diffDays / 30);
-      const diffYears = Math.floor(diffDays / 365);
+      // Calculate months using actual calendar months
+      const diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+      // Calculate years using actual calendar years
+      const diffYears = now.getFullYear() - date.getFullYear();
 
       // Format relative time
       let relativeTime = '';
@@ -61,6 +63,7 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
   };
 
   const content = story.content || story.contentSnippet || '';
+  const formattedDate = formatDate(story.pubDate);
 
   if (viewMode === 'list') {
     return (
@@ -87,8 +90,8 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
               />
             )}
             <div className="story-accordion-meta">
-              <span className="story-date" title={formatDate(story.pubDate).absoluteTime}>
-                {formatDate(story.pubDate).relativeTime}
+              <span className="story-date" title={formattedDate.absoluteTime}>
+                {formattedDate.relativeTime}
               </span>
               <a
                 href={story.link}
@@ -119,8 +122,8 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
         />
       )}
       <div className="story-meta">
-        <span className="story-date" title={formatDate(story.pubDate).absoluteTime}>
-          {formatDate(story.pubDate).relativeTime}
+        <span className="story-date" title={formattedDate.absoluteTime}>
+          {formattedDate.relativeTime}
         </span>
         <a
           href={story.link}

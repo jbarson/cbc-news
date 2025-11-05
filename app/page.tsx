@@ -70,7 +70,7 @@ export default function Home() {
         </div>
         <div className="error">
           <p>{error}</p>
-          <button className="refresh-button" onClick={handleRefresh}>
+          <button type="button" className="refresh-button" onClick={handleRefresh}>
             Try Again
           </button>
         </div>
@@ -85,6 +85,7 @@ export default function Home() {
         <p>Stay informed with the latest news from CBC</p>
         <div className="header-controls">
           <button
+            type="button"
             className="refresh-button"
             onClick={handleRefresh}
             disabled={refreshing}
@@ -92,6 +93,7 @@ export default function Home() {
             {refreshing ? 'Refreshing...' : 'Refresh Stories'}
           </button>
           <button
+            type="button"
             className="view-toggle-button"
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
             aria-label={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}

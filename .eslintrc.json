@@ -67,7 +67,9 @@
         "optionalDependencies": false,
         "peerDependencies": false
       }
-    ]
+    ],
+    "react/button-has-type": "error",
+    "react/no-danger": "warn"
   },
   "settings": {
     "import/resolver": {
@@ -88,7 +90,10 @@
     "build/",
     "coverage/",
     "*.config.js",
-    "*.config.ts"
+    "*.config.ts",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }
 

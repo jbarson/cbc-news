@@ -34,6 +34,7 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       <article className="story-card story-card-list">
         <h2>
           <button
+            type="button"
             className="story-accordion-toggle"
             onClick={() => setIsExpanded(!isExpanded)}
             aria-expanded={isExpanded}

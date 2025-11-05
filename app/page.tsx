@@ -15,17 +15,20 @@ interface RSSResponse {
 
 type ViewMode = 'grid' | 'list';
 
+const SKELETON_COUNT = 6;
+
 export default function Home() {
   const [stories, setStories] = useState<RSSItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('viewMode') as ViewMode;
-      return saved === 'grid' || saved === 'list' ? saved : 'grid';
+    // Check window availability for SSR/build time
+    if (typeof window === 'undefined') {
+      return 'grid';
     }
-    return 'grid';
+    const saved = localStorage.getItem('viewMode') as ViewMode;
+    return saved === 'grid' || saved === 'list' ? saved : 'grid';
   });
 
   const fetchStories = async () => {
@@ -67,7 +70,7 @@ export default function Home() {
 
   if (loading) {
     // Generate skeleton loaders without using array index as key
-    const skeletonKeys = Array.from({ length: 6 }, (_, i) => `skeleton-${viewMode}-${Date.now()}-${i}`);
+    const skeletonKeys = Array.from({ length: SKELETON_COUNT }, (_, i) => `skeleton-${viewMode}-${Date.now()}-${i}`);
     
     return (
       <div className="container">
@@ -120,9 +123,7 @@ export default function Home() {
             onClick={() => {
               const newMode = viewMode === 'grid' ? 'list' : 'grid';
               setViewMode(newMode);
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('viewMode', newMode);
-              }
+              localStorage.setItem('viewMode', newMode);
             }}
             aria-label={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
           >

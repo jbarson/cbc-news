@@ -38,14 +38,20 @@ export default function Home() {
 
       // Check status code before parsing JSON
       if (!response.ok) {
-        if (response.status === 429) {
-          setError('Too many requests. Please wait a moment before refreshing.');
-        } else if (response.status >= 500) {
-          setError('Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.');
-        } else if (response.status === 404) {
-          setError('RSS feed not found. Please check back later.');
-        } else {
-          setError(`Failed to fetch stories (${response.status}). Please check your connection and try again.`);
+        switch (response.status) {
+          case 429:
+            setError('Too many requests. Please wait a moment before refreshing.');
+            break;
+          case 404:
+            setError('RSS feed not found. Please check back later.');
+            break;
+          default:
+            if (response.status >= 500) {
+              setError('Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.');
+            } else {
+              setError(`Failed to fetch stories (${response.status}). Please check your connection and try again.`);
+            }
+            break;
         }
         return;
       }

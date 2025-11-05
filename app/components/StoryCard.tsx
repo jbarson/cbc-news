@@ -29,6 +29,9 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       if (now.getDate() < date.getDate()) {
         diffMonths -= 1;
       }
+      // Ensure non-negative value (handle edge cases where date might be in future)
+      diffMonths = Math.max(diffMonths, 0);
+      
       // Calculate years using actual calendar years (check if anniversary has passed)
       let diffYears = now.getFullYear() - date.getFullYear();
       if (
@@ -37,6 +40,8 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       ) {
         diffYears -= 1;
       }
+      // Ensure non-negative value (handle edge cases where date might be in future)
+      diffYears = Math.max(diffYears, 0);
 
       // Format relative time
       let relativeTime = '';

@@ -261,11 +261,17 @@ a {
   margin-bottom: 0.75rem;
 }
 
-.story-content img {
+.story-content img,
+.story-accordion-content img {
   max-width: 100%;
   height: auto;
   border-radius: 4px;
   margin: 0.75rem 0;
+  /* Optimize image rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  /* Ensure proper aspect ratio */
+  aspect-ratio: attr(width) / attr(height);
 }
 
 .story-content a {

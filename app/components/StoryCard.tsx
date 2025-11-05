@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { RSSItem } from '../api/rss/route';
+import { optimizeImagesInHTML } from '../utils/imageOptimization';
 
 interface StoryCardProps {
   story: RSSItem;
@@ -106,7 +107,8 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
     }
   };
 
-  const content = story.content || story.contentSnippet || '';
+  const rawContent = story.content || story.contentSnippet || '';
+  const content = optimizeImagesInHTML(rawContent);
   const formattedDate = formatDate(story.pubDate);
 
   if (viewMode === 'list') {

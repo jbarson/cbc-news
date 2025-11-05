@@ -55,7 +55,10 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       
       // Calculate years using actual calendar years and anniversary date
       let diffYears = now.getFullYear() - date.getFullYear();
-      const yearAnniversary = new Date(now.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+      // Handle edge cases where date.getDate() doesn't exist in current year (e.g., Feb 29 in non-leap year)
+      const lastDayOfAnniversaryMonth = new Date(now.getFullYear(), date.getMonth() + 1, 0).getDate();
+      const yearAnniversaryDay = Math.min(date.getDate(), lastDayOfAnniversaryMonth);
+      const yearAnniversary = new Date(now.getFullYear(), date.getMonth(), yearAnniversaryDay, 0, 0, 0, 0);
       if (nowMidnight.getTime() < yearAnniversary.getTime()) {
         diffYears -= 1;
       }

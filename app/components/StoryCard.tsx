@@ -38,21 +38,25 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       const diffDays = Math.floor(diffHours / 24);
       const diffWeeks = Math.floor(diffDays / 7);
       
-      // Calculate months difference robustly
+      // Calculate months difference robustly using anniversary date
       let diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
-      // If the day of the month hasn't passed yet, subtract one month
-      if (now.getDate() < date.getDate()) {
+      // Construct the most recent month anniversary date (same day in current month/year)
+      // Handle edge cases where date.getDate() doesn't exist in current month (e.g., Jan 31 -> Feb)
+      const lastDayOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const monthAnniversaryDay = Math.min(date.getDate(), lastDayOfCurrentMonth);
+      const monthAnniversary = new Date(now.getFullYear(), now.getMonth(), monthAnniversaryDay, 0, 0, 0, 0);
+      // Normalize now to midnight for proper comparison
+      const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+      if (nowMidnight.getTime() < monthAnniversary.getTime()) {
         diffMonths -= 1;
       }
       // Ensure non-negative value (shouldn't be needed due to future date check, but safety net)
       diffMonths = Math.max(diffMonths, 0);
       
-      // Calculate years using actual calendar years (check if anniversary has passed)
+      // Calculate years using actual calendar years and anniversary date
       let diffYears = now.getFullYear() - date.getFullYear();
-      if (
-        now.getMonth() < date.getMonth() ||
-        (now.getMonth() === date.getMonth() && now.getDate() < date.getDate())
-      ) {
+      const yearAnniversary = new Date(now.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+      if (nowMidnight.getTime() < yearAnniversary.getTime()) {
         diffYears -= 1;
       }
       // Ensure non-negative value

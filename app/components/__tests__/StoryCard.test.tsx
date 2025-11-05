@@ -26,9 +26,14 @@ describe('StoryCard', () => {
       expect(screen.getByText(/this is test content/i)).toBeInTheDocument();
     });
 
-    it('renders publication date', () => {
+    it('renders publication date in relative format', () => {
       render(<StoryCard story={mockStory} viewMode="grid" />);
-      expect(screen.getByText(/january 15, 2024/i)).toBeInTheDocument();
+      const dateElement = screen.getByText(/ago|just now/i);
+      expect(dateElement).toBeInTheDocument();
+      // Check that absolute time is in title attribute
+      expect(dateElement).toHaveAttribute('title');
+      const title = dateElement.getAttribute('title');
+      expect(title).toMatch(/january|february|march|april|may|june|july|august|september|october|november|december/i);
     });
 
     it('renders read more link', () => {
@@ -98,7 +103,14 @@ describe('StoryCard', () => {
       
       fireEvent.click(button);
       
-      expect(screen.getByText(/january 15, 2024/i)).toBeInTheDocument();
+      // Check for relative time format
+      const dateElement = screen.getByText(/ago|just now/i);
+      expect(dateElement).toBeInTheDocument();
+      // Check that absolute time is in title attribute
+      expect(dateElement).toHaveAttribute('title');
+      const title = dateElement.getAttribute('title');
+      expect(title).toMatch(/january|february|march|april|may|june|july|august|september|october|november|december/i);
+      
       const readMoreLink = screen.getByRole('link', { name: /read full story/i });
       expect(readMoreLink).toBeInTheDocument();
       expect(readMoreLink).toHaveAttribute('href', mockStory.link);

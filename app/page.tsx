@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import StoryCard from './components/StoryCard';
+import StoryCardSkeleton from './components/StoryCardSkeleton';
 import { RSSItem } from './api/rss/route';
 
 interface RSSResponse {
@@ -19,7 +20,13 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('viewMode') as ViewMode;
+      return saved === 'grid' || saved === 'list' ? saved : 'grid';
+    }
+    return 'grid';
+  });
 
   const fetchStories = async () => {
     try {
@@ -30,10 +37,20 @@ export default function Home() {
       if (data.success && data.items) {
         setStories(data.items);
       } else {
-        setError(data.error || 'Failed to fetch stories');
+        // Provide more specific error messages based on context
+        if (response.status === 429) {
+          setError('Too many requests. Please wait a moment before refreshing.');
+        } else if (response.status >= 500) {
+          setError('Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.');
+        } else if (response.status === 404) {
+          setError('RSS feed not found. Please check back later.');
+        } else {
+          setError(data.error || 'Failed to fetch stories. Please check your connection and try again.');
+        }
       }
     } catch (err) {
-      setError('An error occurred while fetching stories');
+      // Network errors or other fetch failures
+      setError('Failed to connect to the server. Please check your internet connection and try again.');
       console.error('Error fetching stories:', err);
     } finally {
       setLoading(false);
@@ -57,7 +74,11 @@ export default function Home() {
           <h1>CBC News Top Stories</h1>
           <p>Loading the latest stories...</p>
         </div>
-        <div className="loading">Loading stories...</div>
+        <div className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}>
+          {[...Array(6)].map((_, index) => (
+            <StoryCardSkeleton key={index} viewMode={viewMode} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -95,7 +116,13 @@ export default function Home() {
           <button
             type="button"
             className="view-toggle-button"
-            onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+            onClick={() => {
+              const newMode = viewMode === 'grid' ? 'list' : 'grid';
+              setViewMode(newMode);
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('viewMode', newMode);
+              }
+            }}
             aria-label={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
           >
             {viewMode === 'grid' ? '📋 List View' : '🔲 Grid View'}

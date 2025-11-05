@@ -36,17 +36,15 @@ export default function Home() {
 
       if (data.success && data.items) {
         setStories(data.items);
-      } else {
+      } else if (response.status === 429) {
         // Provide more specific error messages based on context
-        if (response.status === 429) {
-          setError('Too many requests. Please wait a moment before refreshing.');
-        } else if (response.status >= 500) {
-          setError('Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.');
-        } else if (response.status === 404) {
-          setError('RSS feed not found. Please check back later.');
-        } else {
-          setError(data.error || 'Failed to fetch stories. Please check your connection and try again.');
-        }
+        setError('Too many requests. Please wait a moment before refreshing.');
+      } else if (response.status >= 500) {
+        setError('Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.');
+      } else if (response.status === 404) {
+        setError('RSS feed not found. Please check back later.');
+      } else {
+        setError(data.error || 'Failed to fetch stories. Please check your connection and try again.');
       }
     } catch (err) {
       // Network errors or other fetch failures
@@ -68,6 +66,9 @@ export default function Home() {
   };
 
   if (loading) {
+    // Generate skeleton loaders without using array index as key
+    const skeletonKeys = Array.from({ length: 6 }, (_, i) => `skeleton-${viewMode}-${Date.now()}-${i}`);
+    
     return (
       <div className="container">
         <div className="header">
@@ -75,8 +76,8 @@ export default function Home() {
           <p>Loading the latest stories...</p>
         </div>
         <div className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}>
-          {[...Array(6)].map((_, index) => (
-            <StoryCardSkeleton key={index} viewMode={viewMode} />
+          {skeletonKeys.map((key) => (
+            <StoryCardSkeleton key={key} viewMode={viewMode} />
           ))}
         </div>
       </div>

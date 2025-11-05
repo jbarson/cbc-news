@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react()] as any,
+  plugins: [react({ jsxRuntime: 'automatic' })],
   test: {
     environment: 'jsdom',
     globals: true,
@@ -16,6 +16,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './'),
     },
+  },
+  define: {
+    'process.env.NODE_ENV': '"test"',
   },
 });
 

@@ -11,8 +11,10 @@ interface StoryCardProps {
 export default function StoryCard({ story, viewMode }: StoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
+  const formatDate = (dateString: string): { relativeTime: string; absoluteTime: string } => {
+    if (!dateString) {
+      return { relativeTime: '', absoluteTime: '' };
+    }
     try {
       const date = new Date(dateString);
       const now = new Date();

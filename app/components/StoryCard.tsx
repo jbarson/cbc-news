@@ -24,10 +24,19 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       const diffHours = Math.floor(diffMinutes / 60);
       const diffDays = Math.floor(diffHours / 24);
       const diffWeeks = Math.floor(diffDays / 7);
-      // Calculate months using actual calendar months
-      const diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
-      // Calculate years using actual calendar years
-      const diffYears = now.getFullYear() - date.getFullYear();
+      // Calculate months using actual calendar months, accounting for day of month
+      let diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+      if (now.getDate() < date.getDate()) {
+        diffMonths -= 1;
+      }
+      // Calculate years using actual calendar years (check if anniversary has passed)
+      let diffYears = now.getFullYear() - date.getFullYear();
+      if (
+        now.getMonth() < date.getMonth() ||
+        (now.getMonth() === date.getMonth() && now.getDate() < date.getDate())
+      ) {
+        diffYears -= 1;
+      }
 
       // Format relative time
       let relativeTime = '';

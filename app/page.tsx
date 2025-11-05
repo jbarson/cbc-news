@@ -35,17 +35,25 @@ export default function Home() {
     try {
       setError(null);
       const response = await fetch('/api/rss');
+
+      // Check status code before parsing JSON
+      if (!response.ok) {
+        if (response.status === 429) {
+          setError('Too many requests. Please wait a moment before refreshing.');
+        } else if (response.status >= 500) {
+          setError('Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.');
+        } else if (response.status === 404) {
+          setError('RSS feed not found. Please check back later.');
+        } else {
+          setError(`Failed to fetch stories (${response.status}). Please check your connection and try again.`);
+        }
+        return;
+      }
+
       const data: RSSResponse = await response.json();
 
       if (data.success && data.items) {
         setStories(data.items);
-      } else if (response.status === 429) {
-        // Provide more specific error messages based on context
-        setError('Too many requests. Please wait a moment before refreshing.');
-      } else if (response.status >= 500) {
-        setError('Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.');
-      } else if (response.status === 404) {
-        setError('RSS feed not found. Please check back later.');
       } else {
         setError(data.error || 'Failed to fetch stories. Please check your connection and try again.');
       }
@@ -69,8 +77,8 @@ export default function Home() {
   };
 
   if (loading) {
-    // Generate skeleton loaders without using array index as key
-    const skeletonKeys = Array.from({ length: SKELETON_COUNT }, (_, i) => `skeleton-${viewMode}-${Date.now()}-${i}`);
+    // Generate skeleton loaders with stable keys
+    const skeletonKeys = Array.from({ length: SKELETON_COUNT }, (_, i) => `skeleton-${viewMode}-${i}`);
     
     return (
       <div className="container">

@@ -18,18 +18,34 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
     try {
       const date = new Date(dateString);
       const now = new Date();
+      
+      // Check if date is in the future - handle early to avoid misleading "0 months/years ago"
+      if (date.getTime() > now.getTime()) {
+        const absoluteTime = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        return { relativeTime: 'in the future', absoluteTime };
+      }
+      
       const diffMs = now.getTime() - date.getTime();
       const diffSeconds = Math.floor(diffMs / 1000);
       const diffMinutes = Math.floor(diffSeconds / 60);
       const diffHours = Math.floor(diffMinutes / 60);
       const diffDays = Math.floor(diffHours / 24);
       const diffWeeks = Math.floor(diffDays / 7);
-      // Calculate months using actual calendar months, accounting for day of month
+      
+      // Calculate months using month anniversary approach for better accuracy
       let diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
-      if (now.getDate() < date.getDate()) {
+      // If the current date is before the month anniversary, subtract one
+      const monthAnniversary = new Date(now.getFullYear(), now.getMonth(), date.getDate());
+      if (now < monthAnniversary) {
         diffMonths -= 1;
       }
-      // Ensure non-negative value (handle edge cases where date might be in future)
+      // Ensure non-negative value
       diffMonths = Math.max(diffMonths, 0);
       
       // Calculate years using actual calendar years (check if anniversary has passed)
@@ -40,7 +56,7 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       ) {
         diffYears -= 1;
       }
-      // Ensure non-negative value (handle edge cases where date might be in future)
+      // Ensure non-negative value
       diffYears = Math.max(diffYears, 0);
 
       // Format relative time

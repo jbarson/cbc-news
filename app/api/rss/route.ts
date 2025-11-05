@@ -55,7 +55,6 @@ export async function GET() {
   try {
     const feed = await parser.parseURL('https://www.cbc.ca/webfeed/rss/rss-topstories');
 
-    console.log(feed);
     const items: RSSItem[] = feed.items.map((item) => {
       const content = item.content || item.contentSnippet || '';
       

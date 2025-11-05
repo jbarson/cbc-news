@@ -37,10 +37,8 @@ function containsJavaScript(content: string): boolean {
     'onselect', 'onunload'
   ];
   
-  for (const handler of eventHandlers) {
-    if (new RegExp(`\\b${handler}\\s*=`, 'i').test(content)) {
-      return true;
-    }
+  if (eventHandlers.some((handler) => new RegExp(`\\b${handler}\\s*=`, 'i').test(content))) {
+    return true;
   }
   
   // Check for eval, setTimeout, setInterval

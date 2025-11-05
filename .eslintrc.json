@@ -58,12 +58,21 @@
       {
         "allow": ["warn", "error"]
       }
+    ],
+    "import/extensions": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false
+      }
     ]
   },
   "settings": {
     "import/resolver": {
-      "typescript": {
-        "alwaysTryTypes": true
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     }
   },

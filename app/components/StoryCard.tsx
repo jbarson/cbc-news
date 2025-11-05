@@ -11,6 +11,37 @@ interface StoryCardProps {
 export default function StoryCard({ story, viewMode }: StoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Helper function to calculate anniversary-based difference (months or years)
+  const calculateAnniversaryBasedDiff = (
+    startDate: Date,
+    endDate: Date,
+    unit: 'month' | 'year'
+  ): number => {
+    const nowMidnight = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 0, 0, 0, 0);
+    
+    if (unit === 'month') {
+      // Calculate naive months difference
+      let diff = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth());
+      // Construct anniversary date in current month using original day (let it roll over if needed)
+      const anniversary = new Date(endDate.getFullYear(), endDate.getMonth(), startDate.getDate(), 0, 0, 0, 0);
+      if (nowMidnight.getTime() < anniversary.getTime()) {
+        diff -= 1;
+      }
+      return Math.max(diff, 0);
+    }
+    
+    // Calculate naive years difference
+    let diff = endDate.getFullYear() - startDate.getFullYear();
+    // Handle edge cases where date.getDate() doesn't exist in current year (e.g., Feb 29 in non-leap year)
+    const lastDayOfAnniversaryMonth = new Date(endDate.getFullYear(), startDate.getMonth() + 1, 0).getDate();
+    const anniversaryDay = Math.min(startDate.getDate(), lastDayOfAnniversaryMonth);
+    const anniversary = new Date(endDate.getFullYear(), startDate.getMonth(), anniversaryDay, 0, 0, 0, 0);
+    if (nowMidnight.getTime() < anniversary.getTime()) {
+      diff -= 1;
+    }
+    return Math.max(diff, 0);
+  };
+
   const formatDate = (dateString: string): { relativeTime: string; absoluteTime: string } => {
     if (!dateString) {
       return { relativeTime: '', absoluteTime: '' };
@@ -38,32 +69,9 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       const diffDays = Math.floor(diffHours / 24);
       const diffWeeks = Math.floor(diffDays / 7);
       
-      // Calculate months difference robustly using original month/day for anniversary
-      let diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
-      // Construct the anniversary date in the current month using the original day
-      // If the day doesn't exist in current month (e.g., Jan 31 -> Feb), Date will roll over,
-      // which correctly indicates the anniversary hasn't occurred yet in the current month
-      const anniversaryThisMonth = new Date(now.getFullYear(), now.getMonth(), date.getDate(), 0, 0, 0, 0);
-      // Normalize now to midnight for proper comparison
-      const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-      // If current date is before the anniversary this month, subtract one from diffMonths
-      if (nowMidnight.getTime() < anniversaryThisMonth.getTime()) {
-        diffMonths -= 1;
-      }
-      // Ensure non-negative value (shouldn't be needed due to future date check, but safety net)
-      diffMonths = Math.max(diffMonths, 0);
-      
-      // Calculate years using actual calendar years and anniversary date
-      let diffYears = now.getFullYear() - date.getFullYear();
-      // Handle edge cases where date.getDate() doesn't exist in current year (e.g., Feb 29 in non-leap year)
-      const lastDayOfAnniversaryMonth = new Date(now.getFullYear(), date.getMonth() + 1, 0).getDate();
-      const yearAnniversaryDay = Math.min(date.getDate(), lastDayOfAnniversaryMonth);
-      const yearAnniversary = new Date(now.getFullYear(), date.getMonth(), yearAnniversaryDay, 0, 0, 0, 0);
-      if (nowMidnight.getTime() < yearAnniversary.getTime()) {
-        diffYears -= 1;
-      }
-      // Ensure non-negative value
-      diffYears = Math.max(diffYears, 0);
+      // Calculate months and years difference using anniversary-based approach
+      const diffMonths = calculateAnniversaryBasedDiff(date, now, 'month');
+      const diffYears = calculateAnniversaryBasedDiff(date, now, 'year');
 
       // Format relative time
       let relativeTime = '';

@@ -13,16 +13,14 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-<<<<<<< Updated upstream
         hostname: 'thumbnails.cbc.ca',
       },
       {
         protocol: 'https',
         hostname: 'media.cbc.ca',
       },
-    ],
-  },
-=======
+      {
+        protocol: 'https',
         hostname: 'images.radio-canada.ca',
       },
       {
@@ -51,7 +49,6 @@ const nextConfig = {
       },
     ];
   },
->>>>>>> Stashed changes
 }
 
 module.exports = nextConfig

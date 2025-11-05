@@ -13,6 +13,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+<<<<<<< Updated upstream
         hostname: 'thumbnails.cbc.ca',
       },
       {
@@ -21,6 +22,36 @@ const nextConfig = {
       },
     ],
   },
+=======
+        hostname: 'images.radio-canada.ca',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.cbc.ca',
+      },
+    ],
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              // Allow images from CBC domains and any HTTPS source (for RSS content)
+              "img-src 'self' https: data: blob:",
+              "script-src 'self'",
+              "style-src 'self' 'unsafe-inline'",
+              "font-src 'self' data:",
+            ].join('; '),
+          },
+        ],
+      },
+    ];
+  },
+>>>>>>> Stashed changes
 }
 
 module.exports = nextConfig

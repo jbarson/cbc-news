@@ -55,23 +55,28 @@ export async function GET() {
   try {
     const feed = await parser.parseURL('https://www.cbc.ca/webfeed/rss/rss-topstories');
 
-    const items: RSSItem[] = feed.items.map((item) => {
-      const content = item.content || item.contentSnippet || '';
-      
-      // Check for JavaScript in content
-      if (containsJavaScript(content)) {
-        throw new Error(`Story "${item.title || 'Untitled'}" contains JavaScript and cannot be rendered`);
-      }
-      
-      return {
-        title: item.title || '',
-        link: item.link || '',
-        pubDate: item.pubDate || '',
-        contentSnippet: item.contentSnippet,
-        content: item.content,
-      };
-    });
+    // Filter out problematic stories instead of failing the entire request
+    const items: RSSItem[] = feed.items
+      .map((item): RSSItem | null => {
+        const content = item.content || item.contentSnippet || '';
+        
+        // Check for JavaScript in content
+        if (containsJavaScript(content)) {
+          console.warn(`Filtered out story: "${item.title || 'Untitled'}" - contains JavaScript`);
+          return null; // Filter out instead of throwing
+        }
+        
+        return {
+          title: item.title || '',
+          link: item.link || '',
+          pubDate: item.pubDate || '',
+          contentSnippet: item.contentSnippet,
+          content: item.content,
+        };
+      })
+      .filter((item): item is RSSItem => item !== null);
 
+    // Return successful response even if some stories were filtered
     return NextResponse.json({
       success: true,
       title: feed.title,

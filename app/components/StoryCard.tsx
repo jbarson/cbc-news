@@ -41,11 +41,14 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       // Calculate months using month anniversary approach for better accuracy
       let diffMonths = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
       // If the current date is before the month anniversary, subtract one
-      const monthAnniversary = new Date(now.getFullYear(), now.getMonth(), date.getDate());
+      // Handle edge cases where date.getDate() doesn't exist in current month (e.g., Jan 31 -> Feb)
+      const lastDayOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const monthAnniversaryDay = Math.min(date.getDate(), lastDayOfCurrentMonth);
+      const monthAnniversary = new Date(now.getFullYear(), now.getMonth(), monthAnniversaryDay);
       if (now < monthAnniversary) {
         diffMonths -= 1;
       }
-      // Ensure non-negative value
+      // Ensure non-negative value (shouldn't be needed due to future date check, but safety net)
       diffMonths = Math.max(diffMonths, 0);
       
       // Calculate years using actual calendar years (check if anniversary has passed)

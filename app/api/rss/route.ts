@@ -3,6 +3,9 @@ import Parser from 'rss-parser';
 
 const parser = new Parser();
 
+// Revalidate every 5 minutes (300 seconds)
+export const revalidate = 300;
+
 export interface RSSItem {
   title: string;
   link: string;

@@ -54,7 +54,7 @@ describe('RSS API Route', () => {
       expect(data.items[0].title).toBe('Test Story');
     });
 
-    it('throws error when content contains script tags', async () => {
+    it('filters out story when content contains script tags', async () => {
       const mockFeed = {
         title: 'CBC News',
         description: 'Top Stories',
@@ -75,12 +75,13 @@ describe('RSS API Route', () => {
       const response = await GET();
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.success).toBe(false);
-      expect(data.error).toBe('Failed to fetch RSS feed');
+      // Should successfully filter out malicious content
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.items).toHaveLength(0);
     });
 
-    it('throws error when content contains javascript: protocol', async () => {
+    it('filters out story when content contains javascript: protocol', async () => {
       const mockFeed = {
         title: 'CBC News',
         description: 'Top Stories',
@@ -101,11 +102,13 @@ describe('RSS API Route', () => {
       const response = await GET();
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.success).toBe(false);
+      // Should successfully filter out malicious content
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.items).toHaveLength(0);
     });
 
-    it('throws error when content contains event handlers', async () => {
+    it('filters out story when content contains event handlers', async () => {
       const mockFeed = {
         title: 'CBC News',
         description: 'Top Stories',
@@ -126,11 +129,13 @@ describe('RSS API Route', () => {
       const response = await GET();
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.success).toBe(false);
+      // Should successfully filter out malicious content
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.items).toHaveLength(0);
     });
 
-    it('throws error when content contains eval', async () => {
+    it('filters out story when content contains eval', async () => {
       const mockFeed = {
         title: 'CBC News',
         description: 'Top Stories',
@@ -151,8 +156,10 @@ describe('RSS API Route', () => {
       const response = await GET();
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.success).toBe(false);
+      // Should successfully filter out malicious content
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.items).toHaveLength(0);
     });
 
     it('handles missing fields gracefully', async () => {
@@ -194,7 +201,7 @@ describe('RSS API Route', () => {
       expect(data.error).toBe('Failed to fetch RSS feed');
     });
 
-    it('handles multiple items with mixed safe and unsafe content', async () => {
+    it('filters out malicious items while keeping safe ones', async () => {
       const mockFeed = {
         title: 'CBC News',
         description: 'Top Stories',
@@ -222,9 +229,11 @@ describe('RSS API Route', () => {
       const response = await GET();
       const data = await response.json();
 
-      // Should fail on the malicious item
-      expect(response.status).toBe(500);
-      expect(data.success).toBe(false);
+      // Should successfully filter out malicious item while keeping safe one
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.items).toHaveLength(1);
+      expect(data.items[0].title).toBe('Safe Story');
     });
   });
 });

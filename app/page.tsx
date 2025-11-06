@@ -3,15 +3,15 @@
 import { useState, useEffect } from 'react';
 import StoryCard from './components/StoryCard';
 import StoryCardSkeleton from './components/StoryCardSkeleton';
-import { RSSItem } from './api/rss/route';
-
-interface RSSResponse {
-  success: boolean;
-  title?: string;
-  description?: string;
-  items?: RSSItem[];
-  error?: string;
-}
+import { RSSItem, RSSSuccessResponse, RSSErrorResponse } from './api/rss/route';
+import {
+  createNetworkError,
+  createHTTPError,
+  createRateLimitError,
+  createServerError,
+  getErrorMessage,
+  type ErrorType,
+} from './types';
 
 type ViewMode = 'grid' | 'list';
 
@@ -20,7 +20,7 @@ const SKELETON_COUNT = 6;
 export default function Home() {
   const [stories, setStories] = useState<RSSItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorType | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     // Check window availability for SSR/build time
@@ -38,34 +38,49 @@ export default function Home() {
 
       // Check status code before parsing JSON
       if (!response.ok) {
+        let errorObj: ErrorType;
+        
         switch (response.status) {
           case 429:
-            setError('Too many requests. Please wait a moment before refreshing.');
+            errorObj = createRateLimitError(
+              'Too many requests. Please wait a moment before refreshing.'
+            );
             break;
           case 404:
-            setError('RSS feed not found. Please check back later.');
+            errorObj = createHTTPError(404, 'RSS feed not found. Please check back later.');
             break;
           default:
             if (response.status >= 500) {
-              setError('Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.');
+              errorObj = createServerError(
+                response.status,
+                'Unable to fetch stories. The server may be temporarily unavailable. Please try again in a few moments.'
+              );
             } else {
-              setError(`Failed to fetch stories (${response.status}). Please check your connection and try again.`);
+              errorObj = createHTTPError(
+                response.status,
+                `Failed to fetch stories. Please check your connection and try again.`
+              );
             }
             break;
         }
+        
+        setError(errorObj);
         return;
       }
 
-      const data: RSSResponse = await response.json();
+      const data: RSSSuccessResponse | RSSErrorResponse = await response.json();
 
-      if (data.success && data.items) {
+      if (data.success) {
         setStories(data.items);
       } else {
-        setError(data.error || 'Failed to fetch stories. Please check your connection and try again.');
+        setError(data.error);
       }
     } catch (err) {
       // Network errors or other fetch failures
-      setError('Failed to connect to the server. Please check your internet connection and try again.');
+      const errorObj = createNetworkError(
+        'Failed to connect to the server. Please check your internet connection and try again.'
+      );
+      setError(errorObj);
       console.error('Error fetching stories:', err);
     } finally {
       setLoading(false);
@@ -108,7 +123,7 @@ export default function Home() {
           <h1>CBC News Top Stories</h1>
         </div>
         <div className="error">
-          <p>{error}</p>
+          <p>{getErrorMessage(error)}</p>
           <button type="button" className="refresh-button" onClick={handleRefresh}>
             Try Again
           </button>

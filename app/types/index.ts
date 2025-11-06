@@ -192,7 +192,7 @@ export function getErrorMessage(error: ErrorType): string {
       return error.message;
     case 'RATE_LIMIT_ERROR':
       return error.retryAfter
-        ? `${error.message} Please try again in ${error.retryAfter} seconds.`
+        ? `${error.message}. Please try again in ${error.retryAfter} seconds.`
         : error.message;
     case 'SERVER_ERROR':
       return error.message;
@@ -201,6 +201,7 @@ export function getErrorMessage(error: ErrorType): string {
     case 'PARSE_ERROR':
       return error.details ? `${error.message}: ${error.details}` : error.message;
     default:
+      // This should never be reached due to exhaustive error type checking
       return 'An unexpected error occurred';
   }
 }

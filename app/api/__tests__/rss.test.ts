@@ -183,10 +183,10 @@ describe('RSS API Route', () => {
       const response = await GET();
       const data = await response.json();
 
-      // With strict validation, empty strings for link and pubDate will be filtered out
+      // With strict validation, empty strings for link and pubDate are filtered out
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.items).toHaveLength(0); // Empty strings fail validation
+      expect(data.items).toHaveLength(0); // Empty strings are filtered as missing required fields
     });
 
     it('handles RSS parser errors', async () => {

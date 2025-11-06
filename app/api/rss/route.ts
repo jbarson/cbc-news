@@ -90,9 +90,17 @@ export async function GET() {
         }
         
         // Validate and create branded types
+        // Filter out items with missing required fields
+        if (!item.link || !item.pubDate) {
+          console.warn(
+            `Filtered out story: "${item.title || 'Untitled'}" - missing required fields (link or pubDate)`
+          );
+          return null;
+        }
+        
         try {
-          const link = createStoryLink(item.link || '');
-          const pubDate = createDateString(item.pubDate || '');
+          const link = createStoryLink(item.link);
+          const pubDate = createDateString(item.pubDate);
           
           return {
             title: item.title || '',

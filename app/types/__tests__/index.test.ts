@@ -219,7 +219,7 @@ describe('Error Types', () => {
 
     it('returns message with retry info for rate limit error with retryAfter', () => {
       const error = createRateLimitError('Too many requests', 60);
-      expect(getErrorMessage(error)).toBe('Too many requests Please try again in 60 seconds.');
+      expect(getErrorMessage(error)).toBe('Too many requests. Please try again in 60 seconds.');
     });
 
     it('returns message for server error', () => {

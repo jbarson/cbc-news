@@ -132,7 +132,8 @@ describe('StoryCard', () => {
     it('accordion has proper aria-controls attribute', () => {
       render(<StoryCard story={mockStory} viewMode="list" />);
       const button = screen.getByRole('button', { name: /test story title/i });
-      expect(button).toHaveAttribute('aria-controls', `story-content-${mockStory.link}`);
+      const expectedId = `story-content-${mockStory.link?.replace(/[^a-zA-Z0-9-]/g, '-')}`;
+      expect(button).toHaveAttribute('aria-controls', expectedId);
     });
 
     it('accordion icon has aria-hidden attribute', () => {

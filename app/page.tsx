@@ -153,7 +153,7 @@ export default function Home() {
       </div>
 
       {stories.length === 0 ? (
-        <div id="main-content" className="loading" role="status" aria-live="polite">
+        <div className="loading" role="status" aria-live="polite">
           No stories available
         </div>
       ) : (

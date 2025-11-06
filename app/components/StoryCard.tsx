@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { RSSItem } from '../api/rss/route';
 
 interface StoryCardProps {
@@ -10,19 +10,6 @@ interface StoryCardProps {
 
 export default function StoryCard({ story, viewMode }: StoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const toggleButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Focus management for accordion expansion
-  useEffect(() => {
-    if (isExpanded && contentRef.current) {
-      // Set focus to the first focusable element in the expanded content
-      const firstLink = contentRef.current.querySelector('a');
-      if (firstLink) {
-        (firstLink as HTMLElement).focus();
-      }
-    }
-  }, [isExpanded]);
 
   // Helper function to calculate anniversary-based difference (months or years)
   const calculateAnniversaryBasedDiff = (
@@ -123,11 +110,13 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
   const formattedDate = formatDate(story.pubDate);
 
   if (viewMode === 'list') {
+    // Create a safe ID by using only the story's index-based identifier
+    const contentId = `story-content-${story.link?.replace(/[^a-zA-Z0-9-]/g, '-') || 'unknown'}`;
+    
     return (
       <article className="story-card story-card-list">
         <h2>
           <button
-            ref={toggleButtonRef}
             type="button"
             className="story-accordion-toggle"
             onClick={() => setIsExpanded(!isExpanded)}
@@ -139,17 +128,17 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
               }
             }}
             aria-expanded={isExpanded}
-            aria-controls={`story-content-${story.link}`}
+            aria-controls={contentId}
           >
             {story.title}
             <span className="accordion-icon" aria-hidden="true">{isExpanded ? '−' : '+'}</span>
           </button>
         </h2>
         {isExpanded && (
-          <div ref={contentRef}>
+          <div>
             {content && (
               <div 
-                id={`story-content-${story.link}`}
+                id={contentId}
                 className="story-accordion-content"
                 dangerouslySetInnerHTML={{ __html: content }}
               />

@@ -183,10 +183,10 @@ describe('RSS API Route', () => {
       const response = await GET();
       const data = await response.json();
 
+      // With strict validation, empty strings for link and pubDate will be filtered out
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.items[0].title).toBe('');
-      expect(data.items[0].link).toBe('');
+      expect(data.items).toHaveLength(0); // Empty strings fail validation
     });
 
     it('handles RSS parser errors', async () => {
@@ -198,7 +198,9 @@ describe('RSS API Route', () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe('Failed to fetch RSS feed');
+      expect(data.error).toBeDefined();
+      expect(data.error.type).toBe('SERVER_ERROR');
+      expect(data.error.message).toBe('Failed to fetch RSS feed');
     });
 
     it('filters out malicious items while keeping safe ones', async () => {

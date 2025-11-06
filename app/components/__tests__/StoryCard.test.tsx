@@ -128,6 +128,48 @@ describe('StoryCard', () => {
       // Should not crash, date should be empty string
       expect(screen.getByRole('link', { name: /read full story/i })).toBeInTheDocument();
     });
+
+    it('accordion has proper aria-controls attribute', () => {
+      render(<StoryCard story={mockStory} viewMode="list" />);
+      const button = screen.getByRole('button', { name: /test story title/i });
+      expect(button).toHaveAttribute('aria-controls', `story-content-${mockStory.link}`);
+    });
+
+    it('accordion icon has aria-hidden attribute', () => {
+      const { container } = render(<StoryCard story={mockStory} viewMode="list" />);
+      const icon = container.querySelector('.accordion-icon');
+      expect(icon).toHaveAttribute('aria-hidden', 'true');
+    });
+
+    it('supports keyboard navigation with Enter key', () => {
+      render(<StoryCard story={mockStory} viewMode="list" />);
+      const button = screen.getByRole('button', { name: /test story title/i });
+      
+      // Initially collapsed
+      expect(screen.queryByText(/this is test content/i)).not.toBeInTheDocument();
+      
+      // Press Enter to expand
+      fireEvent.keyDown(button, { key: 'Enter', code: 'Enter' });
+      
+      // Should now be expanded
+      expect(screen.getByText(/this is test content/i)).toBeInTheDocument();
+      expect(button).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('supports keyboard navigation with Space key', () => {
+      render(<StoryCard story={mockStory} viewMode="list" />);
+      const button = screen.getByRole('button', { name: /test story title/i });
+      
+      // Initially collapsed
+      expect(screen.queryByText(/this is test content/i)).not.toBeInTheDocument();
+      
+      // Press Space to expand
+      fireEvent.keyDown(button, { key: ' ', code: 'Space' });
+      
+      // Should now be expanded
+      expect(screen.getByText(/this is test content/i)).toBeInTheDocument();
+      expect(button).toHaveAttribute('aria-expanded', 'true');
+    });
   });
 });
 

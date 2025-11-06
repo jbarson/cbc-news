@@ -227,4 +227,4 @@ app/
 - RSS feed is fetched server-side via API route (CORS handling)
 - All HTML content from RSS must be validated before rendering
 - The app supports both grid and list view modes
-- Images in list view are displayed at 50% width, centered above content
+- In list view accordion: images float left with content wrapping around them

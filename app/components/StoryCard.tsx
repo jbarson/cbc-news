@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { RSSItem } from '../api/rss/route';
 
 interface StoryCardProps {
@@ -10,6 +10,19 @@ interface StoryCardProps {
 
 export default function StoryCard({ story, viewMode }: StoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Focus management for accordion expansion
+  useEffect(() => {
+    if (isExpanded && contentRef.current) {
+      // Set focus to the first focusable element in the expanded content
+      const firstLink = contentRef.current.querySelector('a');
+      if (firstLink) {
+        (firstLink as HTMLElement).focus();
+      }
+    }
+  }, [isExpanded]);
 
   // Helper function to calculate anniversary-based difference (months or years)
   const calculateAnniversaryBasedDiff = (
@@ -114,18 +127,26 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
       <article className="story-card story-card-list">
         <h2>
           <button
+            ref={toggleButtonRef}
             type="button"
             className="story-accordion-toggle"
             onClick={() => setIsExpanded(!isExpanded)}
+            onKeyDown={(e) => {
+              // Add keyboard support for expanding/collapsing
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsExpanded(!isExpanded);
+              }
+            }}
             aria-expanded={isExpanded}
             aria-controls={`story-content-${story.link}`}
           >
             {story.title}
-            <span className="accordion-icon">{isExpanded ? '−' : '+'}</span>
+            <span className="accordion-icon" aria-hidden="true">{isExpanded ? '−' : '+'}</span>
           </button>
         </h2>
         {isExpanded && (
-          <>
+          <div ref={contentRef}>
             {content && (
               <div 
                 id={`story-content-${story.link}`}
@@ -146,7 +167,7 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
                 Read full story →
               </a>
             </div>
-          </>
+          </div>
         )}
       </article>
     );

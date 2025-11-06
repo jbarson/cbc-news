@@ -92,7 +92,12 @@ export default function Home() {
           <h1>CBC News Top Stories</h1>
           <p>Loading the latest stories...</p>
         </div>
-        <div className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}>
+        <div 
+          id="main-content" 
+          className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}
+          aria-live="polite"
+          aria-busy="true"
+        >
           {skeletonKeys.map((key) => (
             <StoryCardSkeleton key={key} viewMode={viewMode} />
           ))}
@@ -107,7 +112,7 @@ export default function Home() {
         <div className="header">
           <h1>CBC News Top Stories</h1>
         </div>
-        <div className="error">
+        <div id="main-content" className="error" role="alert" aria-live="assertive">
           <p>{error}</p>
           <button type="button" className="refresh-button" onClick={handleRefresh}>
             Try Again
@@ -128,6 +133,7 @@ export default function Home() {
             className="refresh-button"
             onClick={handleRefresh}
             disabled={refreshing}
+            aria-label={refreshing ? 'Refreshing stories' : 'Refresh stories'}
           >
             {refreshing ? 'Refreshing...' : 'Refresh Stories'}
           </button>
@@ -147,9 +153,16 @@ export default function Home() {
       </div>
 
       {stories.length === 0 ? (
-        <div className="loading">No stories available</div>
+        <div id="main-content" className="loading" role="status" aria-live="polite">
+          No stories available
+        </div>
       ) : (
-        <div className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}>
+        <div 
+          id="main-content" 
+          className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}
+          role="main"
+          aria-label="News stories"
+        >
           {stories.map((story, index) => (
             <StoryCard key={story.link || index} story={story} viewMode={viewMode} />
           ))}

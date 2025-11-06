@@ -55,22 +55,22 @@ export async function GET() {
   try {
     const feed = await parser.parseURL('https://www.cbc.ca/webfeed/rss/rss-topstories');
 
-    const items: RSSItem[] = feed.items.map((item) => {
-      const content = item.content || item.contentSnippet || '';
-      
-      // Check for JavaScript in content
-      if (containsJavaScript(content)) {
-        throw new Error(`Story "${item.title || 'Untitled'}" contains JavaScript and cannot be rendered`);
-      }
-      
-      return {
+    const items: RSSItem[] = feed.items
+      .filter((item) => {
+        const content = item.content || item.contentSnippet || '';
+        if (containsJavaScript(content)) {
+          console.warn(`Filtered out story: "${item.title || 'Untitled'}" - contains JavaScript`);
+          return false;
+        }
+        return true;
+      })
+      .map((item): RSSItem => ({
         title: item.title || '',
         link: item.link || '',
         pubDate: item.pubDate || '',
         contentSnippet: item.contentSnippet,
         content: item.content,
-      };
-    });
+      }));
 
     return NextResponse.json({
       success: true,

@@ -38,9 +38,12 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
+              // Allow API requests to same origin
+              "connect-src 'self'",
               // Allow images from CBC domains and any HTTPS source (for RSS content)
               "img-src 'self' https: data: blob:",
-              "script-src 'self'",
+              // Next.js requires 'unsafe-eval' for its runtime (code splitting, HMR, etc.)
+              "script-src 'self' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data:",
             ].join('; '),

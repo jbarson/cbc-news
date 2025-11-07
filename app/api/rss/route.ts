@@ -3,8 +3,8 @@ import Parser from 'rss-parser';
 import {
   StoryLink,
   DateString,
-  createStoryLink,
-  createDateString,
+  toStoryLink,
+  toDateString,
   createServerError,
   type ErrorType,
 } from '@/app/types';
@@ -89,33 +89,25 @@ export async function GET() {
           return null; // Filter out instead of throwing
         }
         
-        // Validate and create branded types
-        // Filter out items with missing required fields
-        if (!item.link || !item.pubDate) {
+        // Validate and create branded types using safe conversion functions
+        const link = toStoryLink(item.link || '');
+        const pubDate = toDateString(item.pubDate || '');
+        
+        // Filter out items where validation failed
+        if (!link || !pubDate) {
           console.warn(
-            `Filtered out story: "${item.title || 'Untitled'}" - missing required fields (link or pubDate)`
+            `Filtered out story: "${item.title || 'Untitled'}" - invalid link or pubDate`
           );
           return null;
         }
         
-        try {
-          const link = createStoryLink(item.link);
-          const pubDate = createDateString(item.pubDate);
-          
-          return {
-            title: item.title || '',
-            link,
-            pubDate,
-            contentSnippet: item.contentSnippet,
-            content: item.content,
-          };
-        } catch (validationError) {
-          console.warn(
-            `Filtered out story: "${item.title || 'Untitled'}" - validation failed`,
-            validationError
-          );
-          return null;
-        }
+        return {
+          title: item.title || '',
+          link,
+          pubDate,
+          contentSnippet: item.contentSnippet,
+          content: item.content,
+        };
       })
       .filter((item): item is RSSItem => item !== null);
 

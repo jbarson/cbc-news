@@ -78,7 +78,7 @@ export interface AppError {
 // Specific error types
 export interface NetworkError extends AppError {
   readonly type: 'NETWORK_ERROR';
-  readonly statusCode?: never;
+  // NetworkError does not use statusCode
 }
 
 export interface HTTPError extends AppError {

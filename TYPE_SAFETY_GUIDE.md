@@ -114,7 +114,7 @@ type ErrorType =
 ```typescript
 interface NetworkError extends AppError {
   readonly type: 'NETWORK_ERROR';
-  readonly statusCode?: never;
+  // NetworkError does not use statusCode
 }
 ```
 

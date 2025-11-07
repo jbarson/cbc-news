@@ -200,8 +200,12 @@ export function getErrorMessage(error: ErrorType): string {
       return error.field ? `${error.field}: ${error.message}` : error.message;
     case 'PARSE_ERROR':
       return error.details ? `${error.message}: ${error.details}` : error.message;
-    default:
-      // This should never be reached due to exhaustive error type checking
+    default: {
+      // Exhaustiveness check: if we reach here, error is not a known ErrorType
+      // @ts-expect-error - exhaustiveness check
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const exhaustiveCheck: never = error;
       return 'An unexpected error occurred';
+    }
   }
 }

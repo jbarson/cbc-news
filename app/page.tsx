@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import StoryCard from './components/StoryCard';
 import StoryCardSkeleton from './components/StoryCardSkeleton';
+import DarkModeToggle from './components/DarkModeToggle';
 import { RSSItem } from './api/rss/route';
 
 interface RSSResponse {
@@ -91,6 +92,9 @@ export default function Home() {
         <div className="header">
           <h1>CBC News Top Stories</h1>
           <p>Loading the latest stories...</p>
+          <div className="header-controls">
+            <DarkModeToggle />
+          </div>
         </div>
         <div 
           id="main-content" 
@@ -111,6 +115,9 @@ export default function Home() {
       <div className="container">
         <div className="header">
           <h1>CBC News Top Stories</h1>
+          <div className="header-controls">
+            <DarkModeToggle />
+          </div>
         </div>
         <div id="main-content" className="error" role="alert" aria-live="assertive">
           <p>{error}</p>
@@ -149,6 +156,7 @@ export default function Home() {
           >
             {viewMode === 'grid' ? '📋 List View' : '🔲 Grid View'}
           </button>
+          <DarkModeToggle />
         </div>
       </div>
 

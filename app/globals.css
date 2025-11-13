@@ -1,3 +1,46 @@
+/* CSS Custom Properties for Theming */
+:root {
+  /* Light mode colors */
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-error: #fee;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-tertiary: #999;
+  --accent-primary: #c00;
+  --accent-hover: #a00;
+  --border-color: #eee;
+  --border-error: #fcc;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --skeleton-base: #f0f0f0;
+  --skeleton-highlight: #e0e0e0;
+  --button-secondary: #666;
+  --button-secondary-hover: #555;
+  --button-disabled: #ccc;
+}
+
+[data-theme='dark'] {
+  /* Dark mode colors */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-error: #3d1f1f;
+  --text-primary: #e5e5e5;
+  --text-secondary: #b8b8b8;
+  --text-tertiary: #888;
+  --accent-primary: #ff4444;
+  --accent-hover: #ff6666;
+  --border-color: #444;
+  --border-error: #6d3333;
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.5);
+  --skeleton-base: #3a3a3a;
+  --skeleton-highlight: #4a4a4a;
+  --button-secondary: #555;
+  --button-secondary-hover: #666;
+  --button-disabled: #444;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -16,9 +59,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Skip to content link for accessibility */
@@ -26,7 +70,7 @@ body {
   position: absolute;
   top: -40px;
   left: 0;
-  background: #c00;
+  background: var(--accent-primary);
   color: white;
   padding: 8px 16px;
   text-decoration: none;
@@ -57,12 +101,12 @@ a {
 
 .header h1 {
   font-size: 2.5rem;
-  color: #c00;
+  color: var(--accent-primary);
   margin-bottom: 0.5rem;
 }
 
 .header p {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1.1rem;
 }
 
@@ -79,16 +123,16 @@ a {
   text-align: center;
   padding: 3rem;
   font-size: 1.2rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .error {
   text-align: center;
   padding: 3rem;
-  background-color: #fee;
-  border: 1px solid #fcc;
+  background-color: var(--bg-error);
+  border: 1px solid var(--border-error);
   border-radius: 8px;
-  color: #c00;
+  color: var(--accent-primary);
   margin: 2rem 0;
 }
 
@@ -123,7 +167,7 @@ a {
   border: none;
   padding: 0;
   cursor: pointer;
-  color: #c00;
+  color: var(--accent-primary);
   font-size: 1.1rem;
   font-weight: inherit;
   display: flex;
@@ -134,12 +178,12 @@ a {
 }
 
 .story-accordion-toggle:hover {
-  color: #a00;
+  color: var(--accent-hover);
   text-decoration: underline;
 }
 
 .story-accordion-toggle:focus {
-  outline: 2px solid #c00;
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -147,7 +191,7 @@ a {
 .accordion-icon {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #666;
+  color: var(--text-secondary);
   flex-shrink: 0;
   transition: transform 0.2s;
 }
@@ -155,8 +199,8 @@ a {
 .story-accordion-content {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
-  color: #666;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.6;
   animation: slideDown 0.3s ease-out;
@@ -196,12 +240,12 @@ a {
 }
 
 .story-accordion-content a {
-  color: #c00;
+  color: var(--accent-primary);
   text-decoration: underline;
 }
 
 .story-accordion-content a:hover {
-  color: #a00;
+  color: var(--accent-hover);
 }
 
 .story-accordion-meta {
@@ -210,66 +254,66 @@ a {
   align-items: center;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color);
   font-size: 0.85rem;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .story-accordion-meta .story-date {
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .story-accordion-meta .story-link {
-  color: #c00;
+  color: var(--accent-primary);
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .story-accordion-meta .story-link:hover {
-  color: #a00;
+  color: var(--accent-hover);
   text-decoration: underline;
 }
 
 .story-card {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px var(--shadow-light);
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
 }
 
 .story-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px var(--shadow-medium);
 }
 
 .story-card h2 {
   font-size: 1.3rem;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--text-primary);
   line-height: 1.4;
 }
 
 .story-card h2 a {
-  color: #c00;
+  color: var(--accent-primary);
   transition: color 0.2s;
 }
 
 .story-card h2 a:hover {
-  color: #a00;
+  color: var(--accent-hover);
   text-decoration: underline;
 }
 
 .story-card p {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 1rem;
   font-size: 0.95rem;
   line-height: 1.6;
 }
 
 .story-content {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 1rem;
   font-size: 0.95rem;
   line-height: 1.6;
@@ -287,12 +331,12 @@ a {
 }
 
 .story-content a {
-  color: #c00;
+  color: var(--accent-primary);
   text-decoration: underline;
 }
 
 .story-content a:hover {
-  color: #a00;
+  color: var(--accent-hover);
 }
 
 .story-meta {
@@ -301,20 +345,33 @@ a {
   align-items: center;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color);
   font-size: 0.85rem;
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .story-date {
-  color: #999;
+  color: var(--text-tertiary);
+}
+
+.story-link {
+  color: var(--accent-primary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.story-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
 }
 
 .refresh-button,
-.view-toggle-button {
+.view-toggle-button,
+.dark-mode-toggle {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background-color: #c00;
+  background-color: var(--accent-primary);
   color: white;
   border: none;
   border-radius: 6px;
@@ -325,21 +382,24 @@ a {
 }
 
 .refresh-button:hover,
-.view-toggle-button:hover {
-  background-color: #a00;
+.view-toggle-button:hover,
+.dark-mode-toggle:hover {
+  background-color: var(--accent-hover);
 }
 
 .refresh-button:disabled {
-  background-color: #ccc;
+  background-color: var(--button-disabled);
   cursor: not-allowed;
 }
 
-.view-toggle-button {
-  background-color: #666;
+.view-toggle-button,
+.dark-mode-toggle {
+  background-color: var(--button-secondary);
 }
 
-.view-toggle-button:hover {
-  background-color: #555;
+.view-toggle-button:hover,
+.dark-mode-toggle:hover {
+  background-color: var(--button-secondary-hover);
 }
 
 /* Skeleton Loader Styles */
@@ -349,7 +409,7 @@ a {
 
 .skeleton-title {
   height: 1.5rem;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%);
   background-size: 200% 100%;
   border-radius: 4px;
   margin-bottom: 1rem;
@@ -358,7 +418,7 @@ a {
 
 .skeleton-content {
   height: 1rem;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%);
   background-size: 200% 100%;
   border-radius: 4px;
   margin-bottom: 0.75rem;
@@ -367,7 +427,7 @@ a {
 
 .skeleton-content-line {
   height: 1rem;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%);
   background-size: 200% 100%;
   border-radius: 4px;
   margin-bottom: 0.75rem;
@@ -381,7 +441,7 @@ a {
 .skeleton-meta {
   height: 0.85rem;
   width: 40%;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%);
   background-size: 200% 100%;
   border-radius: 4px;
   margin-top: 1rem;

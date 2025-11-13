@@ -183,7 +183,7 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
           href={story.link}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: '#c00', fontWeight: '500' }}
+          className="story-link"
         >
           Read more →
         </a>

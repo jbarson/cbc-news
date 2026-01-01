@@ -110,6 +110,9 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
   const formattedDate = formatDate(story.pubDate);
 
   if (viewMode === 'list') {
+    // Create a safe ID by using only the story's index-based identifier
+    const contentId = `story-content-${story.link?.replace(/[^a-zA-Z0-9-]/g, '-') || 'unknown'}`;
+    
     return (
       <article className="story-card story-card-list">
         <h2>
@@ -117,18 +120,25 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
             type="button"
             className="story-accordion-toggle"
             onClick={() => setIsExpanded(!isExpanded)}
+            onKeyDown={(e) => {
+              // Add keyboard support for expanding/collapsing
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsExpanded(!isExpanded);
+              }
+            }}
             aria-expanded={isExpanded}
-            aria-controls={`story-content-${story.link}`}
+            aria-controls={contentId}
           >
             {story.title}
-            <span className="accordion-icon">{isExpanded ? '−' : '+'}</span>
+            <span className="accordion-icon" aria-hidden="true">{isExpanded ? '−' : '+'}</span>
           </button>
         </h2>
         {isExpanded && (
-          <>
+          <div>
             {content && (
               <div 
-                id={`story-content-${story.link}`}
+                id={contentId}
                 className="story-accordion-content"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
@@ -146,7 +156,7 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
                 Read full story →
               </a>
             </div>
-          </>
+          </div>
         )}
       </article>
     );
@@ -173,7 +183,7 @@ export default function StoryCard({ story, viewMode }: StoryCardProps) {
           href={story.link}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: '#c00', fontWeight: '500' }}
+          className="story-link"
         >
           Read more →
         </a>

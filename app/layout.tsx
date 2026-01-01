@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import SkipToContent from './components/SkipToContent'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <SkipToContent />
+        {children}
+      </body>
     </html>
   )
 }

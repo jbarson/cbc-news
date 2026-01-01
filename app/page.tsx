@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import StoryCard from './components/StoryCard';
 import StoryCardSkeleton from './components/StoryCardSkeleton';
+import DarkModeToggle from './components/DarkModeToggle';
 import { RSSItem, RSSSuccessResponse, RSSErrorResponse } from './api/rss/route';
 import {
   createNetworkError,
@@ -106,8 +107,16 @@ export default function Home() {
         <div className="header">
           <h1>CBC News Top Stories</h1>
           <p>Loading the latest stories...</p>
+          <div className="header-controls">
+            <DarkModeToggle />
+          </div>
         </div>
-        <div className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}>
+        <div 
+          id="main-content" 
+          className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}
+          aria-live="polite"
+          aria-busy="true"
+        >
           {skeletonKeys.map((key) => (
             <StoryCardSkeleton key={key} viewMode={viewMode} />
           ))}
@@ -121,8 +130,11 @@ export default function Home() {
       <div className="container">
         <div className="header">
           <h1>CBC News Top Stories</h1>
+          <div className="header-controls">
+            <DarkModeToggle />
+          </div>
         </div>
-        <div className="error">
+        <div id="main-content" className="error" role="alert" aria-live="assertive">
           <p>{getErrorMessage(error)}</p>
           <button type="button" className="refresh-button" onClick={handleRefresh}>
             Try Again
@@ -143,6 +155,7 @@ export default function Home() {
             className="refresh-button"
             onClick={handleRefresh}
             disabled={refreshing}
+            aria-label={refreshing ? 'Refreshing stories' : 'Refresh stories'}
           >
             {refreshing ? 'Refreshing...' : 'Refresh Stories'}
           </button>
@@ -158,13 +171,21 @@ export default function Home() {
           >
             {viewMode === 'grid' ? '📋 List View' : '🔲 Grid View'}
           </button>
+          <DarkModeToggle />
         </div>
       </div>
 
       {stories.length === 0 ? (
-        <div className="loading">No stories available</div>
+        <div className="loading" role="status" aria-live="polite">
+          No stories available
+        </div>
       ) : (
-        <div className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}>
+        <div 
+          id="main-content" 
+          className={viewMode === 'grid' ? 'stories-grid' : 'stories-list'}
+          role="main"
+          aria-label="News stories"
+        >
           {stories.map((story, index) => (
             <StoryCard key={story.link || index} story={story} viewMode={viewMode} />
           ))}

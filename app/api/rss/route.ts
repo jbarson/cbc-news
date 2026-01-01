@@ -1,5 +1,13 @@
 import { NextResponse } from 'next/server';
 import Parser from 'rss-parser';
+import {
+  StoryLink,
+  DateString,
+  toStoryLink,
+  toDateString,
+  createServerError,
+  type ErrorType,
+} from '@/app/types';
 
 const parser = new Parser();
 
@@ -8,10 +16,22 @@ export const revalidate = 300;
 
 export interface RSSItem {
   title: string;
-  link: string;
-  pubDate: string;
+  link: StoryLink;
+  pubDate: DateString;
   contentSnippet?: string;
   content?: string;
+}
+
+export interface RSSSuccessResponse {
+  success: true;
+  title: string;
+  description: string;
+  items: RSSItem[];
+}
+
+export interface RSSErrorResponse {
+  success: false;
+  error: ErrorType;
 }
 
 function containsJavaScript(content: string): boolean {
@@ -59,7 +79,8 @@ export async function GET() {
     const feed = await parser.parseURL('https://www.cbc.ca/webfeed/rss/rss-topstories');
 
     // Filter out problematic stories instead of failing the entire request
-    const items: RSSItem[] = feed.items
+    // Handle case where feed.items might be undefined or null
+    const items: RSSItem[] = (feed.items || [])
       .map((item): RSSItem | null => {
         const content = item.content || item.contentSnippet || '';
         
@@ -69,10 +90,22 @@ export async function GET() {
           return null; // Filter out instead of throwing
         }
         
+        // Validate and create branded types using safe conversion functions
+        const link = toStoryLink(item.link || '');
+        const pubDate = toDateString(item.pubDate || '');
+        
+        // Filter out items where validation failed
+        if (!link || !pubDate) {
+          console.warn(
+            `Filtered out story: "${item.title || 'Untitled'}" - invalid link or pubDate`
+          );
+          return null;
+        }
+        
         return {
           title: item.title || '',
-          link: item.link || '',
-          pubDate: item.pubDate || '',
+          link,
+          pubDate,
           contentSnippet: item.contentSnippet,
           content: item.content,
         };
@@ -80,21 +113,23 @@ export async function GET() {
       .filter((item): item is RSSItem => item !== null);
 
     // Return successful response even if some stories were filtered
-    return NextResponse.json({
+    const response: RSSSuccessResponse = {
       success: true,
-      title: feed.title,
-      description: feed.description,
+      title: feed.title || '',
+      description: feed.description || '',
       items,
-    });
+    };
+    
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching RSS feed:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to fetch RSS feed',
-      },
-      { status: 500 }
-    );
+    
+    const errorResponse: RSSErrorResponse = {
+      success: false,
+      error: createServerError(500, 'Failed to fetch RSS feed'),
+    };
+    
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
 

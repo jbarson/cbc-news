@@ -189,6 +189,44 @@ describe('RSS API Route', () => {
       expect(data.items).toHaveLength(0); // Empty strings are filtered as missing required fields
     });
 
+    it('handles missing or null feed.items gracefully', async () => {
+      const mockFeedUndefined = {
+        title: 'CBC News',
+        description: 'Top Stories',
+        items: undefined,
+      };
+
+      mockParseURL.mockResolvedValue(mockFeedUndefined);
+
+      const GET = await getRoute();
+      const response = await GET();
+      const data = await response.json();
+
+      // Should return success with empty items array
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.items).toHaveLength(0);
+    });
+
+    it('handles null feed.items gracefully', async () => {
+      const mockFeedNull = {
+        title: 'CBC News',
+        description: 'Top Stories',
+        items: null,
+      };
+
+      mockParseURL.mockResolvedValue(mockFeedNull);
+
+      const GET = await getRoute();
+      const response = await GET();
+      const data = await response.json();
+
+      // Should return success with empty items array
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.items).toHaveLength(0);
+    });
+
     it('handles RSS parser errors', async () => {
       mockParseURL.mockRejectedValue(new Error('Network error'));
 

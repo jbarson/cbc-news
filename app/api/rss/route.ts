@@ -79,7 +79,8 @@ export async function GET() {
     const feed = await parser.parseURL('https://www.cbc.ca/webfeed/rss/rss-topstories');
 
     // Filter out problematic stories instead of failing the entire request
-    const items: RSSItem[] = feed.items
+    // Handle case where feed.items might be undefined or null
+    const items: RSSItem[] = (feed.items || [])
       .map((item): RSSItem | null => {
         const content = item.content || item.contentSnippet || '';
         

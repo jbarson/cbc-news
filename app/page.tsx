@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import StoryCard from './components/StoryCard';
 import StoryCardSkeleton from './components/StoryCardSkeleton';
 import DarkModeToggle from './components/DarkModeToggle';
@@ -28,11 +28,11 @@ export default function Home() {
     if (typeof window === 'undefined') {
       return 'grid';
     }
-    const saved = localStorage.getItem('viewMode') as ViewMode;
+    const saved = localStorage.getItem('viewMode');
     return saved === 'grid' || saved === 'list' ? saved : 'grid';
   });
 
-  const fetchStories = async () => {
+  const fetchStories = useCallback(async () => {
     try {
       setError(null);
       const response = await fetch('/api/rss');
@@ -87,11 +87,11 @@ export default function Home() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchStories();
-  }, []);
+  }, [fetchStories]);
 
   const handleRefresh = () => {
     setRefreshing(true);

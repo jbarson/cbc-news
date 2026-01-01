@@ -60,18 +60,21 @@ function generateCSPHeader(isDevelopment: boolean, reportUri?: string): string {
 /**
  * Middleware to add security headers including Content Security Policy
  */
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
   const response = NextResponse.next();
 
   // Determine if we're in development mode
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  // eslint-disable-next-line @typescript-eslint/dot-notation
+  const isDevelopment = process.env['NODE_ENV'] === 'development';
 
   // Get CSP mode from environment variable (default: 'report-only')
   // Options: 'enforce', 'report-only', or 'disabled'
-  const cspMode = process.env.CSP_MODE || 'report-only';
+  // eslint-disable-next-line @typescript-eslint/dot-notation
+  const cspMode = process.env['CSP_MODE'] || 'report-only';
 
   // Generate CSP header
-  const reportUri = process.env.CSP_REPORT_URI || '/api/csp-report';
+  // eslint-disable-next-line @typescript-eslint/dot-notation
+  const reportUri = process.env['CSP_REPORT_URI'] || '/api/csp-report';
   const cspHeader = generateCSPHeader(isDevelopment, reportUri);
 
   // Add CSP header based on mode

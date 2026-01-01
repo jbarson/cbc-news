@@ -71,7 +71,7 @@ export default function Home() {
       const data: RSSSuccessResponse | RSSErrorResponse = await response.json();
 
       if (data.success) {
-        setStories((data as RSSSuccessResponse).items);
+        setStories(data.items);
       } else {
         setError(data.error);
       }
